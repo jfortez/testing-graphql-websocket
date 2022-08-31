@@ -1,0 +1,33 @@
+{
+  "name": "node-graphql",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "nodemon src/server.js"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "trailingComma": "all"
+  },
+  "dependencies": {
+    "@graphql-tools/schema": "^9.0.2",
+    "@prisma/client": "4.2.1",
+    "apollo-server": "3.10.2",
+    "apollo-server-core": "^3.10.2",
+    "apollo-server-express": "^3.10.2",
+    "graphql": "16.5.0",
+    "graphql-scalars": "1.18.0",
+    "graphql-subscriptions": "^2.0.0",
+    "graphql-ws": "^5.10.1",
+    "nexus": "1.3.0",
+    "ws": "^8.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "2.0.19",
+    "prisma": "4.2.1"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  }
+}
