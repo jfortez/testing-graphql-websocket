@@ -1,118 +1,106 @@
-import React, { Fragment, useState, useEffect } from "react";
-import { useSubscription, useMutation } from "@apollo/client";
-import { Chip, Grid, Paper, IconButton, TextField, Button } from "@mui/material";
-import { PlayCircleFilledWhite, PauseCircle } from "@mui/icons-material";
-import Lists from "./components/Lists";
-import { USER_SUBSCRIPTION, SUB, ADD_USER, GET_USERS } from "./model";
-
-const WSubscription = () => {
-  const [truths, setTruths] = useState([]);
-  const [stop, setStop] = useState(true);
-  const { data, loading, error } = useSubscription(SUB, { skip: stop });
-  useEffect(() => {
-    if (data) {
-      setTruths((prev) => [...prev, data.truths]);
-    }
-  }, [data]);
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error :(</p>;
-  return (
-    <Fragment>
-      <IconButton color={stop ? "success" : "error"} onClick={() => setStop((prev) => !prev)}>
-        {stop ? <PlayCircleFilledWhite /> : <PauseCircle />}
-      </IconButton>
-      <Paper elevation={3} style={{ maxHeight: 300, overflow: "auto" }}>
-        <Grid container spacing={2} p={2}>
-          {truths.map((truth, index) => {
-            return (
-              <Grid item xs={1} key={index} textAlign="center">
-                <Chip label={truth ? "OK" : "FAIL"} color={truth ? "success" : "error"} />
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Paper>
-    </Fragment>
-  );
-};
-
-const CreateUser = () => {
-  const [data, setData] = useState({ name: "", email: "" });
-  const [addUser] = useMutation(ADD_USER);
+import { useSubscription } from "@apollo/client";
+import React, { Fragment } from "react";
+import { Subscription } from "./components";
+import {
+  GET_USERS,
+  USER_SUBSCRIPTION,
+  GET_POSTS,
+  USERS_SUBS,
+  POSTS_SUBSCRIPTION,
+  PROFILE_SUBSCRIPTION,
+  GET_PROFILES,
+  // SUBSCRIBED_DELETED_POST,
+  // SUBSCRIBED_DELETED_PROFILE,
+  // SUBSCRIBED_DELETED_USER,
+} from "./model";
+function App() {
   useSubscription(USER_SUBSCRIPTION, {
     onSubscriptionData: ({ client, subscriptionData }) => {
       const { userCreated } = subscriptionData.data;
-      const dataInStore = client.readQuery({ query: GET_USERS });
+      const usersInStore = client.readQuery({ query: GET_USERS });
+      const lastUserInStore = usersInStore.allUsers?.at(-1);
+      if (lastUserInStore?.id === userCreated?.id) return;
+      const postsInStore = client.readQuery({ query: GET_POSTS });
       client.writeQuery({
         query: GET_USERS,
         data: {
-          ...dataInStore,
-          allUsers: [...dataInStore.allUsers, userCreated],
+          ...usersInStore,
+          allUsers: [...usersInStore.allUsers, userCreated],
+        },
+      });
+      client.writeQuery({
+        query: GET_POSTS,
+        data: {
+          ...postsInStore,
+          allPosts: [...postsInStore.allPosts, ...userCreated.posts],
         },
       });
     },
   });
-  const onSubmit = (e) => {
-    e.preventDefault();
-    const newUser = {
-      ...data,
-      posts: [
-        {
-          title: "Hello World",
-          content: "This is a post",
+  useSubscription(USERS_SUBS, {
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const { Users } = subscriptionData.data;
+      console.log("subscribed");
+      const usersInStore = client.readQuery({ query: GET_USERS });
+      const lastUserInStore = usersInStore.allUsers?.at(-1);
+      if (lastUserInStore?.id === Users?.id) return;
+      client.writeQuery({
+        query: GET_USERS,
+        data: {
+          ...usersInStore,
+          allUsers: [...usersInStore.allUsers, Users],
         },
-      ],
-    };
-    addUser({ variables: { data: newUser } }).then((e) => {
-      setData({ name: "", email: "" });
-    });
-  };
-  return (
-    <form onSubmit={onSubmit}>
-      <Grid container spacing={4}>
-        <Grid item xs={12}>
-          <TextField
-            id="form-Nombre"
-            label="Nombre"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={data.name}
-            onChange={(e) => setData((prev) => ({ ...prev, name: e.target.value }))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <TextField
-            id="form-Email"
-            label="Email"
-            variant="outlined"
-            size="small"
-            fullWidth
-            value={data.email}
-            onChange={(e) => setData((prev) => ({ ...prev, email: e.target.value }))}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Button color="success" variant="contained" fullWidth type="submit">
-            Enviar
-          </Button>
-        </Grid>
-      </Grid>
-    </form>
-  );
-};
-function App() {
+      });
+    },
+  });
+  useSubscription(POSTS_SUBSCRIPTION, {
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const { Posts } = subscriptionData.data;
+      const postsInStorage = client.readQuery({ query: GET_POSTS });
+      const lastPost = postsInStorage.allPosts?.at(-1);
+      if (lastPost?.id === Posts?.id) return;
+      client.writeQuery({
+        query: GET_POSTS,
+        data: {
+          ...postsInStorage,
+          allPosts: [...postsInStorage.allPosts, Posts],
+        },
+      });
+    },
+  });
+  useSubscription(PROFILE_SUBSCRIPTION, {
+    onSubscriptionData: ({ client, subscriptionData }) => {
+      const { Profiles } = subscriptionData.data;
+      const ProfilesInStorage = client.readQuery({ query: GET_PROFILES });
+      const lastProfile = ProfilesInStorage.allProfile?.at(-1);
+      if (lastProfile?.id === Profiles?.id) return;
+      client.writeQuery({
+        query: GET_PROFILES,
+        data: {
+          ...ProfilesInStorage,
+          allProfile: [...ProfilesInStorage.allProfile, Profiles],
+        },
+      });
+    },
+  });
+  /* This send a Warning */
+  // useSubscription(SUBSCRIBED_DELETED_USER, {
+  //   onSubscriptionData: ({ client, subscriptionData }) => {
+  //     const { deletedUser } = subscriptionData.data;
+  //     const usersInStore = client.readQuery({ query: GET_USERS });
+  //     const users = usersInStore.allUsers?.filter((user) => user.id !== deletedUser?.id);
+  //     client.writeQuery({
+  //       query: GET_USERS,
+  //       data: {
+  //         ...usersInStore,
+  //         allUsers: users,
+  //       },
+  //     });
+  //   },
+  // });
   return (
     <Fragment>
-      <h1>Query</h1>
-      <Lists />
-      <Grid container spacing={2} p={2}>
-        <Grid item xs={3}>
-          <CreateUser />
-        </Grid>
-      </Grid>
-      <h1>Subscription</h1>
-      <WSubscription />
+      <Subscription />
     </Fragment>
   );
 }

@@ -3,12 +3,16 @@ const { gql } = require('apollo-server-express')
 const typeDefs = gql`
   scalar DateTime
   type Mutation {
-    addProfileForUser(bio: String, userUniqueInput: UserUniqueInput!): Profile
     createDraft(authorEmail: String!, data: PostCreateInput!): Post
-    deletePost(id: Int!): Post
     incrementPostViewCount(id: Int!): Post
     signupUser(data: UserCreateInput!): User!
     togglePublishPost(id: Int!): Post
+    addUser(data: UserCreateOnlyUserInput!): User!
+    addPost(data: PostCreateInput!): Post!
+    addProfile(data: ProfileCreateOnlyInput!): Profile!
+    deleteUser(id: Int!): User
+    deletePost(id: Int!): Post
+    deleteProfile(id: Int!): Profile
   }
 
   type Post {
@@ -60,6 +64,12 @@ const typeDefs = gql`
     truths: Boolean
     hello: String!
     userCreated: User!
+    Users: User!
+    Posts: Post!
+    Profiles: Profile!
+    deletedUser: User!
+    deletedPost: Post!
+    deletedProfile: Profile!
   }
 
   type User {
@@ -79,6 +89,13 @@ const typeDefs = gql`
   input UserUniqueInput {
     email: String
     id: Int
+  }
+  input UserCreateOnlyUserInput {
+    email: String!
+    name: String
+  }
+  input ProfileCreateOnlyInput {
+    bio: String
   }
 `
 
