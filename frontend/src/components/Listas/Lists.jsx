@@ -8,9 +8,9 @@ import {
   DELETE_POST,
   DELETE_PROFILE,
   DELETE_USER,
-} from "../model";
-import { Grid } from "@mui/material";
-import GenerateItems from "./GenerateItems";
+} from "../../model";
+import { Box, Grid } from "@mui/material";
+import GenerateItems from "../GenerateItems";
 
 const UserList = ({ onSelect }) => {
   const { data, loading, error } = useQuery(GET_USERS);
@@ -95,25 +95,27 @@ const Lists = () => {
   };
   return (
     <Fragment>
-      {useMemo(
-        () => (
-          <Fragment>
-            <Grid container spacing={2} justifyContent="center">
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <UserList onSelect={onSelect} />
+      <Box p={2}>
+        {useMemo(
+          () => (
+            <Fragment>
+              <Grid container spacing={2} justifyContent="center">
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <UserList onSelect={onSelect} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <PostList onSelect={onSelect} />
+                </Grid>
+                <Grid item xs={12} sm={6} md={4} lg={3}>
+                  <ProfileList onSelect={onSelect} />
+                </Grid>
               </Grid>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <PostList onSelect={onSelect} />
-              </Grid>
-              <Grid item xs={12} sm={6} md={4} lg={3}>
-                <ProfileList onSelect={onSelect} />
-              </Grid>
-            </Grid>
-          </Fragment>
-        ),
-        []
-      )}
-      <GenerateItems selected={itemSelected} />
+            </Fragment>
+          ),
+          []
+        )}
+        <GenerateItems selected={itemSelected} />
+      </Box>
     </Fragment>
   );
 };

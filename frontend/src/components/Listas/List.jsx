@@ -31,7 +31,9 @@ const ListComponent = ({
   onDelete = () => {},
   onSelect = () => {},
   loading,
+  showDeleteButon = true,
   primaryReference = () => {},
+  height = 250,
 }) => {
   const [id, setId] = useState(-1);
   const addId = useCallback((id) => setId(id), []);
@@ -44,8 +46,8 @@ const ListComponent = ({
             bgcolor: "background.paper",
             overflowY: "auto",
             overflowX: "hidden",
-            maxHeight: 250,
-            height: 250,
+            maxHeight: height,
+            height,
             paddingBottom: 0,
           }}
           subheader={
@@ -91,14 +93,16 @@ const ListComponent = ({
               <Fragment key={item?.id ?? index}>
                 <ListItem
                   secondaryAction={
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => onDelete(item.id)}
-                      disabled={loading}
-                    >
-                      <Delete />
-                    </IconButton>
+                    showDeleteButon && (
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => onDelete(item.id)}
+                        disabled={loading}
+                      >
+                        <Delete />
+                      </IconButton>
+                    )
                   }
                   disablePadding
                 >

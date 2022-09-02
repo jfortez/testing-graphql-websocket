@@ -14,6 +14,7 @@ const typeDefs = gql`
     deleteProfile(id: Int!): Profile
     addAuthorToPost(data: AuthorToPost!): Post
     addProfileToUser(data: ProfileToUser!): Profile
+    sendMessage(data: SendMessageInput!): Message!
   }
   input AuthorToPost {
     id: Int!
@@ -53,6 +54,7 @@ const typeDefs = gql`
     allUsers: [User!]!
     allPosts: [Post!]!
     allProfile: [Profile!]!
+    allMessages: [Message!]!
     draftsByUser(userUniqueInput: UserUniqueInput!): [Post]
     feed(
       orderBy: PostOrderByUpdatedAtInput
@@ -79,6 +81,7 @@ const typeDefs = gql`
     deletedUser: User!
     deletedPost: Post!
     deletedProfile: Profile!
+    Messages: Message!
   }
 
   type User {
@@ -87,6 +90,12 @@ const typeDefs = gql`
     name: String
     posts: [Post!]!
     profile: Profile
+  }
+  type Message {
+    id: Int!
+    content: String!
+    createdAt: DateTime!
+    updatedAt: DateTime!
   }
 
   input UserCreateInput {
@@ -105,6 +114,9 @@ const typeDefs = gql`
   }
   input ProfileCreateOnlyInput {
     bio: String
+  }
+  input SendMessageInput {
+    content: String!
   }
 `
 

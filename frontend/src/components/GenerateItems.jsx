@@ -182,18 +182,27 @@ const CreateForm = ({ handleClose, open, dataSource, item = {}, users, onSubmit 
 const GenerateItems = ({ selected }) => {
   const [open, setOpen] = useState({ user: false, post: false, profile: false });
   const { id, type } = selected;
+  const isSkipeable = id === -1 || type === "Usuarios";
+  /** Get data by Id */
   const { data, loading } = useQuery(type === "Posts" ? GET_POST_BY_ID : GET_PROFILE_BY_ID, {
-    skip: id === -1,
+    skip: isSkipeable,
     variables: { id },
   });
-  const { data: usersData, loading: loadingUsers } = useQuery(GET_USERS, { skip: id === -1 });
+  /** get Users */
+  const { data: usersData, loading: loadingUsers } = useQuery(GET_USERS, {
+    skip: isSkipeable,
+  });
   const { allUsers } = usersData || {};
   const { profileById, postById } = data || {};
+  /* No Refetching queries after create a item */
   const [addUser] = useMutation(ADD_ONLY_USER);
   const [addPost] = useMutation(ADD_ONLY_POST);
   const [addAuthor] = useMutation(ADD_AUTHOR_TO_POST);
+  /* ------ */
+  /** No Refetching queries, but for no reason update o subscribe the data */
   const [addUserProfile] = useMutation(ADD_USER_TO_PROFILE);
   const [addProfile] = useMutation(ADD_ONLY_PROFILE);
+  /* ------ */
   const handleUser = async () => {
     await addUser({ variables: { data: getRandomUser() } });
   };

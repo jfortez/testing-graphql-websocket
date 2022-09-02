@@ -1,5 +1,5 @@
 import { gql } from "@apollo/client";
-import { USER_DETAILS, POST_DETAILS, PROFILE_DETAILS } from "./fragments";
+import { USER_DETAILS, POST_DETAILS, PROFILE_DETAILS, MESSAGE_DETAILS } from "./fragments";
 const GET_USERS = gql`
   query getUsers {
     allUsers {
@@ -190,6 +190,33 @@ const ADD_AUTHOR_TO_POST = gql`
   }
   ${POST_DETAILS}
 `;
+
+const GET_MESSAGES = gql`
+  query getMessages {
+    allMessages {
+      ...MessageDetails
+    }
+  }
+  ${MESSAGE_DETAILS}
+`;
+
+const SEND_MESSAGE = gql`
+  mutation sendMessage($data: SendMessageInput!) {
+    sendMessage(data: $data) {
+      ...MessageDetails
+    }
+  }
+  ${MESSAGE_DETAILS}
+`;
+
+const MESSAGE_SUBSCRIPTION = gql`
+  subscription {
+    Messages {
+      ...MessageDetails
+    }
+  }
+  ${MESSAGE_DETAILS}
+`;
 export {
   GET_USERS,
   SUB,
@@ -213,4 +240,7 @@ export {
   GET_POST_BY_ID,
   ADD_USER_TO_PROFILE,
   ADD_AUTHOR_TO_POST,
+  GET_MESSAGES,
+  SEND_MESSAGE,
+  MESSAGE_SUBSCRIPTION,
 };

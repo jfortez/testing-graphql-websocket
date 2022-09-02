@@ -30,4 +30,11 @@ const PROFILE_DETAILS = gql`
   ${USER_DETAILS}
 `;
 
-export { USER_DETAILS, POST_DETAILS, PROFILE_DETAILS };
+const MESSAGE_DETAILS = gql`
+  fragment MessageDetails on Message {
+    id
+    content
+  }
+`;
+
+export { USER_DETAILS, POST_DETAILS, PROFILE_DETAILS, MESSAGE_DETAILS };

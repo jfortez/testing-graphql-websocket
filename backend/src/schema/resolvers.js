@@ -17,6 +17,10 @@ const resolvers = {
       const data = await prisma.user.findMany()
       return data
     },
+    allMessages: async () => {
+      const data = await prisma.message.findMany()
+      return data
+    },
     draftsByUser: async (_, { userUniqueInput }) => {
       const { id, email } = userUniqueInput
       const data = await prisma.user
@@ -187,6 +191,13 @@ const resolvers = {
       })
       return updateUser
     },
+    sendMessage: async (_, { data }) => {
+      const newMessage = await prisma.message.create({
+        data,
+      })
+      pubsub.publish('SEND_MESSAGE', { Messages: newMessage })
+      return newMessage
+    },
   },
   Subscription: {
     userCreated: {
@@ -201,6 +212,22 @@ const resolvers = {
     },
     Profiles: {
       subscribe: () => pubsub.asyncIterator('ONLY_PROFILE_CREATED'),
+    },
+    Messages: {
+      subscribe: () => pubsub.asyncIterator('SEND_MESSAGE'),
+    },
+    truths: {
+      subscribe() {
+        return (async function* () {
+          while (true) {
+            await new Promise((res) => setTimeout(res, 1000))
+            yield Math.random() > 0.5
+          }
+        })()
+      },
+      resolve(eventData) {
+        return eventData
+      },
     },
     // deletedUser: {
     //   subscribe: () => pubsub.asyncIterator('USER_DELETED'),

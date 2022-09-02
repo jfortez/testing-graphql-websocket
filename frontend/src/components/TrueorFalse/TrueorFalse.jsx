@@ -2,12 +2,9 @@ import React, { Fragment, useState, useEffect } from "react";
 import { useSubscription } from "@apollo/client";
 import { Chip, Grid, Paper, IconButton } from "@mui/material";
 import { PlayCircleFilledWhite, PauseCircle } from "@mui/icons-material";
-import Lists from "./Lists";
-import { SUB } from "../model";
-import { memo } from "react";
+import { SUB } from "../../model";
 
-// eslint-disable-next-line no-unused-vars
-const WSubscription = () => {
+const TrueorFalse = () => {
   const [truths, setTruths] = useState([]);
   const [stop, setStop] = useState(true);
   const { data, loading, error } = useSubscription(SUB, { skip: stop });
@@ -38,14 +35,4 @@ const WSubscription = () => {
   );
 };
 
-function Subscription() {
-  return (
-    <Fragment>
-      <Lists />
-      {/* <h1>Subscription</h1>
-      <WSubscription /> */}
-    </Fragment>
-  );
-}
-
-export default memo(Subscription);
+export default TrueorFalse;
