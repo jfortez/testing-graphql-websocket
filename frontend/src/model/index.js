@@ -155,6 +155,41 @@ const SUBSCRIBED_DELETED_PROFILE = gql`
   }
   ${PROFILE_DETAILS}
 `;
+const GET_PROFILE_BY_ID = gql`
+  query getProfileById($id: Int!) {
+    profileById(id: $id) {
+      ...ProfileDetails
+    }
+  }
+  ${PROFILE_DETAILS}
+`;
+
+const GET_POST_BY_ID = gql`
+  query getPostById($id: Int!) {
+    postById(id: $id) {
+      ...PostDetails
+    }
+  }
+  ${POST_DETAILS}
+`;
+
+const ADD_USER_TO_PROFILE = gql`
+  mutation addUserToProfile($data: ProfileToUser!) {
+    addProfileToUser(data: $data) {
+      ...ProfileDetails
+    }
+  }
+  ${PROFILE_DETAILS}
+`;
+
+const ADD_AUTHOR_TO_POST = gql`
+  mutation addAuthor($data: AuthorToPost!) {
+    addAuthorToPost(data: $data) {
+      ...PostDetails
+    }
+  }
+  ${POST_DETAILS}
+`;
 export {
   GET_USERS,
   SUB,
@@ -174,4 +209,8 @@ export {
   SUBSCRIBED_DELETED_USER,
   SUBSCRIBED_DELETED_POST,
   SUBSCRIBED_DELETED_PROFILE,
+  GET_PROFILE_BY_ID,
+  GET_POST_BY_ID,
+  ADD_USER_TO_PROFILE,
+  ADD_AUTHOR_TO_POST,
 };

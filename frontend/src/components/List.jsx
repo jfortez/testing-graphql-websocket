@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, memo, useState, useCallback } from "react";
 import {
   IconButton,
   List,
@@ -13,6 +13,7 @@ import {
   Badge,
   Divider,
   CircularProgress,
+  ListItemButton,
 } from "@mui/material";
 import { Delete } from "@mui/icons-material";
 const avatarInitials = (name) => {
@@ -28,8 +29,12 @@ const ListComponent = ({
   primaryLevel,
   title,
   onDelete = () => {},
+  onSelect = () => {},
   loading,
+  primaryReference = () => {},
 }) => {
+  const [id, setId] = useState(-1);
+  const addId = useCallback((id) => setId(id), []);
   return (
     <Fragment>
       <Paper elevation={4}>
@@ -68,7 +73,6 @@ const ListComponent = ({
               sx={{
                 height: "calc(100% - 42px)",
                 justifyContent: "center",
-                // bgcolor: "rgba(0,0,0,.35)",
               }}
             >
               <CircularProgress color="success" />
@@ -76,6 +80,13 @@ const ListComponent = ({
           )}
 
           {data.map((item, index) => {
+            const reference = primaryReference(item);
+            const primaryName =
+              primaryLevel && primary && item?.[primary]?.[primaryLevel]
+                ? item?.[primary]?.[primaryLevel]
+                : primary && item?.[primary]
+                ? item?.[primary]
+                : "Unknown";
             return (
               <Fragment key={item?.id ?? index}>
                 <ListItem
@@ -89,39 +100,44 @@ const ListComponent = ({
                       <Delete />
                     </IconButton>
                   }
+                  disablePadding
                 >
-                  <ListItemAvatar>
-                    <Avatar>
-                      {avatarInitials(
-                        primaryLevel && primary ? item?.[primary]?.[primaryLevel] : item?.[primary]
-                      )}
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText
-                    primary={
-                      primaryLevel && primary && item?.[primary]?.[primaryLevel]
-                        ? item?.[primary]?.[primaryLevel]
-                        : primary && item?.[primary]
-                        ? item?.[primary]
-                        : "Unknown"
-                    }
-                    secondary={item?.[secondary]}
-                    primaryTypographyProps={{
-                      style: {
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        fontWeight: 600,
-                      },
+                  <ListItemButton
+                    selected={id === item.id}
+                    onClick={() => {
+                      addId(item.id);
+                      onSelect(item.id, title);
                     }}
-                    secondaryTypographyProps={{
-                      style: {
-                        whiteSpace: "nowrap",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                      },
-                    }}
-                  />
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        {avatarInitials(
+                          primaryLevel && primary
+                            ? item?.[primary]?.[primaryLevel]
+                            : item?.[primary]
+                        )}
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText
+                      primary={reference ? `${primaryName} (${reference})` : primaryName}
+                      secondary={item?.[secondary]}
+                      primaryTypographyProps={{
+                        style: {
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          fontWeight: 600,
+                        },
+                      }}
+                      secondaryTypographyProps={{
+                        style: {
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        },
+                      }}
+                    />
+                  </ListItemButton>
                 </ListItem>
                 <Divider />
               </Fragment>
@@ -133,4 +149,4 @@ const ListComponent = ({
   );
 };
 
-export default ListComponent;
+export default memo(ListComponent);

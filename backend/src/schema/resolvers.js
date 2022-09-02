@@ -58,6 +58,11 @@ const resolvers = {
         where: { id: args.id || undefined },
       })
     },
+    profileById: async (_parent, args) => {
+      return await prisma.profile.findUnique({
+        where: { id: args.id || undefined },
+      })
+    },
   },
   User: {
     posts: async (parent) => {
@@ -163,6 +168,24 @@ const resolvers = {
       //   deletedProfile,
       // })
       return deletedProfile
+    },
+    addAuthorToPost: async (_, { data }) => {
+      const updatePost = await prisma.post.update({
+        where: { id: data.id },
+        data: {
+          authorId: data.authorId,
+        },
+      })
+      return updatePost
+    },
+    addProfileToUser: async (_, { data }) => {
+      const updateUser = await prisma.profile.update({
+        where: { id: data.id },
+        data: {
+          userId: data.userId,
+        },
+      })
+      return updateUser
     },
   },
   Subscription: {

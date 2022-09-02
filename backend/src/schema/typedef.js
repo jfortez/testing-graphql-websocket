@@ -3,7 +3,6 @@ const { gql } = require('apollo-server-express')
 const typeDefs = gql`
   scalar DateTime
   type Mutation {
-    createDraft(authorEmail: String!, data: PostCreateInput!): Post
     incrementPostViewCount(id: Int!): Post
     signupUser(data: UserCreateInput!): User!
     togglePublishPost(id: Int!): Post
@@ -13,8 +12,17 @@ const typeDefs = gql`
     deleteUser(id: Int!): User
     deletePost(id: Int!): Post
     deleteProfile(id: Int!): Profile
+    addAuthorToPost(data: AuthorToPost!): Post
+    addProfileToUser(data: ProfileToUser!): Profile
   }
-
+  input AuthorToPost {
+    id: Int!
+    authorId: Int!
+  }
+  input ProfileToUser {
+    id: Int!
+    userId: Int!
+  }
   type Post {
     author: User
     content: String
@@ -52,7 +60,8 @@ const typeDefs = gql`
       skip: Int
       take: Int
     ): [Post!]!
-    postById(id: Int): Post
+    postById(id: Int!): Post
+    profileById(id: Int!): Profile
   }
 
   enum SortOrder {

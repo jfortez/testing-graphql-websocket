@@ -1,6 +1,7 @@
 import { useSubscription } from "@apollo/client";
 import React, { Fragment } from "react";
-import { Subscription } from "./components";
+import Subscription from "./components";
+
 import {
   GET_USERS,
   USER_SUBSCRIPTION,
@@ -40,7 +41,6 @@ function App() {
   useSubscription(USERS_SUBS, {
     onSubscriptionData: ({ client, subscriptionData }) => {
       const { Users } = subscriptionData.data;
-      console.log("subscribed");
       const usersInStore = client.readQuery({ query: GET_USERS });
       const lastUserInStore = usersInStore.allUsers?.at(-1);
       if (lastUserInStore?.id === Users?.id) return;
